@@ -2,7 +2,7 @@
 
 #include <time.h>
 #include "components/simple_scene.h"
-#include "lab_m1/tema1/object2D.h"
+#include "lab_m1/tema1/objects2D.h"
 #include "lab_m1/tema1/transform2D.h"
 #include "lab_m1/tema1/Character.h"
 #include "lab_m1/tema1/Obstacle.h"
@@ -46,9 +46,9 @@ namespace m1
         void Update(float deltaTimeSeconds) override;
         void FrameEnd() override;
 
-        void DrawScene(glm::mat3 visMatrix, float deltaTimeSeconds);
+        void DrawScene(glm::mat3 visMatrix, float deltaTimeSeconds, bool isMinimap);
         void drawEnemy(glm::mat3 visMatrix);
-        void drawCharacter(glm::mat3 visMatrix);
+        void drawCharacter(glm::mat3 visMatrix, bool isMinimap);
         void drawObstacles(glm::mat3 visMatrix);
         void drawBorders(glm::mat3 visMatrix);
         void drawBullets(glm::mat3 visMatrix);
@@ -69,7 +69,7 @@ namespace m1
 
     protected:
         ViewportSpace viewSpace;
-        LogicSpace logicSpace;
+        LogicSpace logicSpace, logicSpaceMinimap;
         Character* character = new Character();
         std::vector<Character> enemies;
         std::vector<Obstacle> obstacles;

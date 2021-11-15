@@ -1,4 +1,6 @@
-#include "object2D.h"
+#pragma once
+
+#include "lab_m1/tema1/objects2D.h"
 
 #include <vector>
 
@@ -6,7 +8,7 @@
 #include "utils/gl_utils.h"
 
 
-Mesh* object2D::CreateSquare(
+Mesh* objects2D::CreateSquare(
     const std::string& name,
     glm::vec3 leftBottomCorner,
     float length,
@@ -39,7 +41,7 @@ Mesh* object2D::CreateSquare(
     return square;
 }
 
-Mesh* object2D::CreateCircle(
+Mesh* objects2D::CreateCircle(
     const std::string& name,
     glm::vec3 center,
     float radius,

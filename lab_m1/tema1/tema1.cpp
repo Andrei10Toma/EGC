@@ -36,6 +36,10 @@ void Vis2D::Init()
     logicSpace.y = 0;       // logic y
     logicSpace.width = 12;   // logic width
     logicSpace.height = 12;  // logic height
+    logicSpaceMinimap.x = 0;
+    logicSpaceMinimap.y = -2;
+    logicSpaceMinimap.width = 13;
+    logicSpaceMinimap.height = 19;
     enemySpawn = clock();
     fireRate = clock();
 
@@ -43,25 +47,25 @@ void Vis2D::Init()
     character->setBodyY((logicSpace.height - logicSpace.y) / 2);
 
     // Create the meshes
-    Mesh* square = object2D::CreateSquare("square", glm::vec3(0, 0, 0), 1, glm::vec3(0.9961f, 0.8471f, 0.6941f), true);
+    Mesh* square = objects2D::CreateSquare("square", glm::vec3(0, 0, 0), 1, glm::vec3(0.9961f, 0.8471f, 0.6941f), true);
     AddMeshToList(square);
 
-    Mesh* body = object2D::CreateCircle("body", glm::vec3(0, 0, 0), 1, glm::vec3(0.6f, 0.8f, 0.2f), 20);
+    Mesh* body = objects2D::CreateCircle("body", glm::vec3(0, 0, 0), 1, glm::vec3(0.6f, 0.8f, 0.2f), 20);
     AddMeshToList(body);
 
-    Mesh* circleBorder = object2D::CreateCircle("circleBorder", glm::vec3(0, 0, 0), 1, glm::vec3(0, 0, 0), 20);
+    Mesh* circleBorder = objects2D::CreateCircle("circleBorder", glm::vec3(0, 0, 0), 1, glm::vec3(0, 0, 0), 20);
     AddMeshToList(circleBorder);
 
-    Mesh* mapBorder = object2D::CreateSquare("mapBorder", glm::vec3(0, 0, 0), 1, glm::vec3(0, 0, 0), true);
+    Mesh* mapBorder = objects2D::CreateSquare("mapBorder", glm::vec3(0, 0, 0), 1, glm::vec3(0, 0, 0), true);
     AddMeshToList(mapBorder);
 
-    Mesh* enemy = object2D::CreateSquare("enemy", glm::vec3(0, 0, 0), 1, glm::vec3(0.137f, 0.137f, 0.556f), true);
+    Mesh* enemy = objects2D::CreateSquare("enemy", glm::vec3(0, 0, 0), 1, glm::vec3(0.137f, 0.137f, 0.556f), true);
     AddMeshToList(enemy);
 
-    Mesh* healthBar = object2D::CreateSquare("health", glm::vec3(0, 0, 0), 1, glm::vec3(0.502f, 0.0f, 0.1255f), true);
+    Mesh* healthBar = objects2D::CreateSquare("health", glm::vec3(0, 0, 0), 1, glm::vec3(0.502f, 0.0f, 0.1255f), true);
     AddMeshToList(healthBar);
 
-    Mesh* healthBorder = object2D::CreateSquare("healthBorder", glm::vec3(0, 0, 0), 1, glm::vec3(0.502f, 0.0f, 0.1255f), false);
+    Mesh* healthBorder = objects2D::CreateSquare("healthBorder", glm::vec3(0, 0, 0), 1, glm::vec3(0.502f, 0.0f, 0.1255f), false);
     AddMeshToList(healthBorder);
 
     // Create the obstacles vector
@@ -169,7 +173,14 @@ void Vis2D::Update(float deltaTimeSeconds)
         // Compute uniform 2D visualization matrix
         visMatrix = glm::mat3(1);
         visMatrix *= VisualizationTransf2DUnif(logicSpace, viewSpace);
-        DrawScene(visMatrix, deltaTimeSeconds);
+        DrawScene(visMatrix, deltaTimeSeconds, false);
+
+        viewSpace = ViewportSpace(0, 0, resolution.x / 5, resolution.y / 5);
+        SetViewportArea(viewSpace, glm::vec3(0.5f), true);
+
+        visMatrix = glm::mat3(1);
+        visMatrix *= VisualizationTransf2DUnif(logicSpaceMinimap, viewSpace);
+        DrawScene(visMatrix, deltaTimeSeconds, true);
     }
 }
 
@@ -215,15 +226,17 @@ void Vis2D::drawEnemy(glm::mat3 visMatrix) {
     }
 }
 
-void Vis2D::drawCharacter(glm::mat3 visMatrix) {
+void Vis2D::drawCharacter(glm::mat3 visMatrix, bool isMinimap) {
     // Draw the body of the character
     character->setModelMatrix(visMatrix * transform2D::Translate(character->getBodyX(), character->getBodyY()) * transform2D::Scale(0.7f, 0.7f) * transform2D::Rotate(character->getAngle()));
 
     // Draw the health bar of the player
-    character->setHPMatrix(visMatrix * transform2D::Translate(character->getBodyX(), character->getBodyY()) * transform2D::Translate(6, 5) * transform2D::Scale(((double)character->getHP() / 5) * 3, 0.3f) * transform2D::Translate(-0.5f, -0.5f));
-    RenderMesh2D(meshes["health"], shaders["VertexColor"], character->getHPModelMatrix());
-    character->setHPMatrix(visMatrix * transform2D::Translate(character->getBodyX(), character->getBodyY()) * transform2D::Translate(6, 5) * transform2D::Scale(3, 0.3f) * transform2D::Translate(-0.5f, -0.5f));
-    RenderMesh2D(meshes["healthBorder"], shaders["VertexColor"], character->getHPModelMatrix());
+    if (!isMinimap) {
+        character->setHPMatrix(visMatrix * transform2D::Translate(character->getBodyX(), character->getBodyY()) * transform2D::Translate(6, 5) * transform2D::Scale(((double)character->getHP() / 5) * 3, 0.3f) * transform2D::Translate(-0.5f, -0.5f));
+        RenderMesh2D(meshes["health"], shaders["VertexColor"], character->getHPModelMatrix());
+        character->setHPMatrix(visMatrix * transform2D::Translate(character->getBodyX(), character->getBodyY()) * transform2D::Translate(6, 5) * transform2D::Scale(3, 0.3f) * transform2D::Translate(-0.5f, -0.5f));
+        RenderMesh2D(meshes["healthBorder"], shaders["VertexColor"], character->getHPModelMatrix());
+    }
 
     // Draw the right hand
     character->setModelMatrixRightHand(character->getModelMatrix() * transform2D::Translate(0.6f, 0.7f) * transform2D::Scale(0.2f, 0.2f));
@@ -300,10 +313,10 @@ void Vis2D::drawBullets(glm::mat3 visMatrix) {
     }
 }
 
-void Vis2D::DrawScene(glm::mat3 visMatrix, float deltaTimeSeconds) {
+void Vis2D::DrawScene(glm::mat3 visMatrix, float deltaTimeSeconds, bool isMinimap) {
      drawEnemy(visMatrix);
 
-     drawCharacter(visMatrix);
+     drawCharacter(visMatrix, isMinimap);
 
      drawObstacles(visMatrix);
 
