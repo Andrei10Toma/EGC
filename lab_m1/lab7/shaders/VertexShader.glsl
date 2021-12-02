@@ -26,12 +26,16 @@ out vec3 color;
 void main()
 {
     // TODO(student): Compute world space vectors
-
+    vec3 world_pos = (Model * vec4(v_position, 1)).xyz;
+    vec3 N = normalize(mat3(Model) * v_normal);
+    vec3 L = normalize(light_position - world_pos);
+    vec3 V = normalize(eye_position - world_pos);
+    vec3 H = normalize(L + V);
     // TODO(student): Define ambient light component
-    float ambient_light = 0.25;
+    float ambient_light = material_kd;
 
     // TODO(student): Compute diffuse light component
-    float diffuse_light = 0;
+    float diffuse_light = material_kd * max(dot(N, L), 0);
 
     // TODO(student): Compute specular light component
     float specular_light = 0;
@@ -41,15 +45,15 @@ void main()
     // (1975) and Blinn-Phong (1977) reflection models, and we are using the
     // Gouraud (1971) shading method. There is also the Phong (1975) shading
     // method, which we'll use in the future. Don't mix them up!
-    if (diffuse_light > 0)
-    {
-
+    if (diffuse_light > 0) {
+        specular_light = material_ks * (dot(N, L) > 0 ? 1 : 0) * pow(max(dot(N, H), 0), material_shininess);
     }
 
+    float atenuare = 1 / pow(distance(light_position, world_pos), 2);
     // TODO(student): Compute light
-
+    vec3 culoare = object_color * (ambient_light + atenuare * (diffuse_light + specular_light));
     // TODO(student): Send color light output to fragment shader
-    color = vec3(1);
+    color = vec3(culoare);
 
     gl_Position = Projection * View * Model * vec4(v_position, 1.0);
 }

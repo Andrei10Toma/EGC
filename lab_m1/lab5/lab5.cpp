@@ -74,7 +74,6 @@ void Lab5::Update(float deltaTimeSeconds)
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 1, 0));
         modelMatrix = glm::rotate(modelMatrix, RADIANS(45.0f), glm::vec3(0, 1, 0));
-
         RenderMesh(meshes["box"], shaders["VertexNormal"], modelMatrix);
     }
 

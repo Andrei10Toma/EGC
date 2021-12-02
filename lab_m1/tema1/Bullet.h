@@ -22,7 +22,7 @@ public:
 
 	bool checkCollisionWithObstacles(std::vector<Obstacle> obstacles);
 
-	void checkCollisionWithEnemies(std::vector<Character> &enemies);
+	int checkCollisionWithEnemies(std::vector<Character> &enemies);
 
 	float getX();
 

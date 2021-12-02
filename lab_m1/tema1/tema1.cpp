@@ -163,6 +163,7 @@ void Vis2D::FrameStart()
 void Vis2D::Update(float deltaTimeSeconds)
 {
     if (character->getHP() != 0) {
+        cout << '\r' << "SCORE: " << character->getScore() << flush;
         glm::ivec2 resolution = window->GetResolution();
 
         // The viewport is now the right half of the window
@@ -345,7 +346,7 @@ void Vis2D::DrawScene(glm::mat3 visMatrix, float deltaTimeSeconds, bool isMinima
         if (bullets[i].checkCollisionWithObstacles(obstacles))
             bullets[i].setInAir(false);
 
-        bullets[i].checkCollisionWithEnemies(enemies);
+        character->setScore(character->getScore() + bullets[i].checkCollisionWithEnemies(enemies));
     }
 
 }

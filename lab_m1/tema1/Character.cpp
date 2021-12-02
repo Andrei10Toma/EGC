@@ -7,9 +7,11 @@ Character::Character() {
 	this->modelMatrix = glm::mat3(1);
 	this->modelMatrixLeftHand = glm::mat3(1);
 	this->modelMatrixRightHand = glm::mat3(1);
+	this->hpMatrix = glm::mat3(1);
 	this->dead = false;
 	this->speed = 3;
 	this->hp = 5;
+	this->score = 0;
 }
 
 Character::~Character() {
@@ -92,6 +94,10 @@ int Character::getHP() {
 	return hp;
 }
 
+int Character::getScore() {
+	return score;
+}
+
 void Character::setAngle(float angle) {
 	this->angle = angle;
 }
@@ -130,4 +136,8 @@ void Character::setHP(int hp) {
 
 void Character::setHPMatrix(glm::mat3 hpMatrix) {
 	this->hpMatrix = hpMatrix;
+}
+
+void Character::setScore(int score) {
+	this->score = score;
 }

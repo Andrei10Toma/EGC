@@ -16,6 +16,7 @@ private:
 	glm::mat3 hpMatrix;
 	float speed;
 	int hp;
+	int score;
 
 public:
 	Character();
@@ -37,6 +38,8 @@ public:
 	float getSpeed();
 
 	int getHP();
+
+	int getScore();
 
 	glm::mat3 getHPModelMatrix();
 
@@ -63,6 +66,8 @@ public:
 	void setSpeed(float speed);
 
 	void setHP(int hp);
+
+	void setScore(int score);
 
 	void setHPMatrix(glm::mat3 hpMatrix);
 };

@@ -34,7 +34,8 @@ bool Bullet::checkCollisionWithObstacles(std::vector<Obstacle> obstacles) {
 	return false;
 }
 
-void Bullet::checkCollisionWithEnemies(std::vector<Character> &enemies) {
+int Bullet::checkCollisionWithEnemies(std::vector<Character> &enemies) {
+	int score = 0;
 	float x1Bullet = x - 0.2f, x2Bullet = x + 0.2f;
 	float y1Bullet = y + 0.2f, y2Bullet = y - 0.2f;
 
@@ -54,9 +55,11 @@ void Bullet::checkCollisionWithEnemies(std::vector<Character> &enemies) {
 			if (result == true) {
 				enemies[i].setIsDead(true);
 				this->inAir = false;
+				score++;
 			}
 		}
 	}
+	return score;
 
 }
 
