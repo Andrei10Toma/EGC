@@ -7,6 +7,7 @@ Enemy::Enemy() {
 	gridPosi = 0;
 	gridPosj = 0;
 	isDead = false;
+	deathTime = NULL;
 }
 
 Enemy::~Enemy() {

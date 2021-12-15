@@ -41,15 +41,15 @@ namespace m1
         void Update(float deltaTimeSeconds) override;
         void FrameEnd() override;
         
-        void RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, const glm::vec3& color);
+        void RenderSimpleMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix, const glm::vec3& color, float deltaTime = -1);
         void GenerateMaze();
         void BacktrackMazeGenerator(int positioni, int positionj);
         bool EnemyIsAlreadyAtGrid(int gridPosi, int gridPosj);
         bool DoIntersect(Point a, Point b);
+        bool CheckBulletCollissionWithEnemies(float enemyX, float enemyZ);
         bool CheckCharacterCollisionWithWalls();
         bool CheckBulletCollisionWithWalls(Bullet *bullet);
-
-        //void RenderMesh(Mesh* mesh, Shader* shader, const glm::mat4& modelMatrix) override;
+        bool CheckCharacterCollisionWithEnemy(float enemyX, float enemyZ);
 
         void OnInputUpdate(float deltaTime, int mods) override;
         void OnKeyPress(int key, int mods) override;
@@ -65,16 +65,18 @@ namespace m1
         glm::mat4 projectionMatrix;
         int mazeSize = 10;
         int characterStartGridi, characterStartGridj;
+        int exiti, exitj, sideOfTheExit;
         std::vector<std::vector<MazeCell>> mazeMap;
         std::vector<std::vector<bool>> visited;
-        bool renderCameraTarget, isPerspective;
+        bool allEnemiesDead, gameOver;
         float left, right, bottom, top;
-        float fov;
         float angle = 0;
+        float enemy_time = 0;
         bool isFirstPerson;
         time_t fireRate;
         std::vector<Enemy> enemies;
-        std::vector<Point> wallPoints;
+        // point and if is the exit
+        std::vector<std::pair<Point, bool>> wallPoints;
         std::vector<Bullet*> bullets;
     };
 }   // namespace m1

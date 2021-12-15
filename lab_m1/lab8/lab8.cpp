@@ -60,6 +60,10 @@ void Lab8::Init()
         materialShininess = 30;
         materialKd = 0.5;
         materialKs = 0.5;
+        is_spot = 0;
+        angleX = 0;
+        angleZ = 0;
+        spotAngle = RADIANS(30);
     }
 }
 
@@ -82,7 +86,7 @@ void Lab8::Update(float deltaTimeSeconds)
         glm::mat4 modelMatrix = glm::mat4(1);
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 1, 0));
         // TODO(student): Add or change the object colors
-        RenderSimpleMesh(meshes["sphere"], shaders["LabShader"], modelMatrix);
+        RenderSimpleMesh(meshes["sphere"], shaders["LabShader"], modelMatrix, glm::vec3(0.3f, 0.5f, 0.7f));
 
     }
 
@@ -92,7 +96,7 @@ void Lab8::Update(float deltaTimeSeconds)
         modelMatrix = glm::rotate(modelMatrix, RADIANS(60.0f), glm::vec3(1, 0, 0));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.5f));
         // TODO(student): Add or change the object colors
-        RenderSimpleMesh(meshes["box"], shaders["LabShader"], modelMatrix);
+        RenderSimpleMesh(meshes["box"], shaders["LabShader"], modelMatrix, glm::vec3(0.7f, 0.1f, 0.3f));
 
     }
 
@@ -109,7 +113,7 @@ void Lab8::Update(float deltaTimeSeconds)
         modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.01f, 0));
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.25f));
         // TODO(student): Add or change the object colors
-        RenderSimpleMesh(meshes["plane"], shaders["LabShader"], modelMatrix);
+        RenderSimpleMesh(meshes["plane"], shaders["LabShader"], modelMatrix, glm::vec3(0.5f, 0.5f, 0.5f));
 
     }
 
@@ -119,6 +123,15 @@ void Lab8::Update(float deltaTimeSeconds)
         modelMatrix = glm::translate(modelMatrix, lightPosition);
         modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
         RenderMesh(meshes["sphere"], shaders["Simple"], modelMatrix);
+    }
+
+    // Change the position of the light
+    {
+        glm::mat4 spotRotate = glm::mat4(1);
+        spotRotate = glm::rotate(spotRotate, angleX, glm::vec3(1, 0, 0));
+        spotRotate = glm::rotate(spotRotate, angleZ, glm::vec3(0, 0, 1));
+        lightDirection = glm::vec3(0, -1, 0);
+        lightDirection = glm::vec3(spotRotate * glm::vec4(lightDirection, 0));
     }
 }
 
@@ -163,6 +176,11 @@ void Lab8::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelM
     glUniform3f(object_color, color.r, color.g, color.b);
 
     // TODO(student): Set any other shader uniforms that you need
+    int is_spot_location = glGetUniformLocation(shader->program, "is_spot");
+    glUniform1i(is_spot_location, is_spot);
+
+    int spot_angle_location = glGetUniformLocation(shader->program, "spot_angle");
+    glUniform1f(spot_angle_location, spotAngle);
 
     // Bind model matrix
     GLint loc_model_matrix = glGetUniformLocation(shader->program, "Model");
@@ -210,7 +228,12 @@ void Lab8::OnInputUpdate(float deltaTime, int mods)
         if (window->KeyHold(GLFW_KEY_Q)) lightPosition -= up * deltaTime * speed;
 
         // TODO(student): Set any other keys that you might need
-
+        if (window->KeyHold(GLFW_KEY_Z)) angleX += deltaTime;
+        if (window->KeyHold(GLFW_KEY_X)) angleX -= deltaTime;
+        if (window->KeyHold(GLFW_KEY_C)) angleZ += deltaTime;
+        if (window->KeyHold(GLFW_KEY_V)) angleZ -= deltaTime;
+        if (window->KeyHold(GLFW_KEY_B)) spotAngle += deltaTime;
+        if (window->KeyHold(GLFW_KEY_N)) spotAngle -= deltaTime;
     }
 }
 
@@ -218,9 +241,10 @@ void Lab8::OnInputUpdate(float deltaTime, int mods)
 void Lab8::OnKeyPress(int key, int mods)
 {
     // Add key press event
-
+    if (key == GLFW_KEY_F) {
+        is_spot = is_spot == 0 ? 1 : 0;
+    }
     // TODO(student): Set keys that you might need
-
 }
 
 

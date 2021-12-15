@@ -97,7 +97,10 @@ void Lab9::Init()
         vector<glm::vec2> textureCoords
         {
             // TODO(student): Complete texture coordinates for the square
-            glm::vec2(0.0f, 0.0f)
+            glm::vec2(0.0f, 0.0f),
+            glm::vec2(0.0f, 1.0f),
+            glm::vec2(1.0f, 1.0f),
+            glm::vec2(1.0f, 0.0f)
 
         };
 
@@ -219,7 +222,10 @@ void Lab9::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelM
     {
         // TODO(student): Do these:
         // - activate texture location 0
+        glActiveTexture(GL_TEXTURE0);
         // - bind the texture1 ID
+        glBindTexture(GL_TEXTURE_2D, texture1->GetTextureID());
+        glUniform1i(glGetUniformLocation(shader->program, "texture_1"), 0);
         // - send theuniform value
 
     }
@@ -227,8 +233,11 @@ void Lab9::RenderSimpleMesh(Mesh *mesh, Shader *shader, const glm::mat4 & modelM
     if (texture2)
     {
         // TODO(student): Do these:
+        glActiveTexture(GL_TEXTURE0);
         // - activate texture location 1
+        glBindTexture(GL_TEXTURE_2D, texture2->GetTextureID());
         // - bind the texture2 ID
+        glUniform1i(glGetUniformLocation(shader->program, "texture_2"), 0);
         // - send the uniform value
 
     }
@@ -247,13 +256,25 @@ Texture2D* Lab9::CreateRandomTexture(unsigned int width, unsigned int height)
     unsigned char* data = new unsigned char[size];
 
     // TODO(student): Generate random texture data
+    for (int i = 0; i < size; i++) {
+        data[i] = rand() % 256;
+    }
 
     // TODO(student): Generate and bind the new texture ID
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     if (GLEW_EXT_texture_filter_anisotropic) {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4);
     }
     // TODO(student): Set the texture parameters (MIN_FILTER, MAG_FILTER and WRAPPING MODE) using glTexParameteri
+    // Mi se pare ca cel mai bine se vede cu MAG GL_NEAREST si MIN linear MIPMAP linear
+    // Se vad diferente doar cand modific MAG din nearest in linear, dar in rest nu pot sa observ ceva semnificativ.
+    // Nu inteleg de ce nu se observa ceva in rest.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     CheckOpenGLError();
@@ -262,6 +283,7 @@ Texture2D* Lab9::CreateRandomTexture(unsigned int width, unsigned int height)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 
     // TODO(student): Generate texture mip-maps
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     CheckOpenGLError();
 

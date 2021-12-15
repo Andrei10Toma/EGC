@@ -15,6 +15,12 @@ layout(location = 0) out vec4 out_color;
 void main()
 {
     // TODO(student): Calculate the out_color using the texture2D() function.
-    out_color = vec4(1);
-
+    vec4 color1 = texture2D(texture_1, texcoord);
+    if (color1.a < 0.5) 
+        discard;
+    vec4 color2 = texture2D(texture_2, texcoord);
+    if (color2.a < 0.5)
+        discard;
+    // nici aici la mix nu pot sa zic ca observ vreo diferenta :))))
+	out_color = mix(color1, color2, 0.5f);
 }
